@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+<head>
+<title> Responsive Interactive Canvas </title>
+<script>
+var canvas;
+var context; 
+var circles = [];
+var squares = [];
+var clouds = [];
+var titles = [];
+var stars = [];
+var triangles = [];
+
+function Circle (x,y,color){
+	this.x = x;
+	this.y = y;
+	this.color= color;
+	this.dx = Math.random()*4-2;
+	this.dy = Math.random()*4-2;
+}
+
+function Square (x,y,color){
+	this.x = x;
+	this.y = y;
+	this.color = color;
+	this.dx = Math.random()*4-2;
+	this.dy = Math.random()*4-2;
+}
+
+function Cloud (x,y,color){
+	this.x = x;
+	this.y = y;
+	this.color = color;
+	this.dx = Math.random()*4-2;
+	this.dy = Math.random()*4-2;
+}
+
+function Star (x,y,color){
+	this.x = x;
+	this.y = y;
+	this.color = color;
+	this.dx = Math.random()*4-2;
+	this.dy = Math.random()*4-2;
+}
+
+function Triangle (x,y,color){
+	this.x = x;
+	this.y = y;
+	this.color = color;
+	this.dx = Math.random()*4-2;
+	this.dy = Math.random()*4-2;
+}
+
+function makeTitle(){
+	var lines = [
+		['Christmas', 'Holiday', 'Seasonal'],
+		['Bells', 'Songs', 'Presents', 'Colors', 'Mistletoe'],
+	];
+	var title = '';
+	for (var i = 0; i < lines.length; i++){
+		var random = Math.floor(Math.random() * lines[i].length);
+		title += lines[i][random] + ' ';
+	};
+	return(title);
+}
+
+function init(){
+	canvas = document.getElementById('canvas');
+	context = canvas.getContext('2d');
+
+	window.addEventListener('resize', resizeCanvas, false);
+	window.addEventListener('orientationchange', resizeCanvas, false);
+	resizeCanvas();
+	canvas.onclick = function(event){
+		handleClick(event.clientX, event.clientY);
+		var title = makeTitle();
+		drawText(title);
+	};
+	timer = setInterval(resizeCanvas, 30);
+
+}
+
+function handleClick(x,y){
+	var found = false;
+	for (var i = 0; i < circles.length; i++){
+		d = Math.sqrt((circles[i].x - x) * (circles[i].x - x) + (circles[i].y - y) * (circles[i].y - y));
+		if(d <= 30){
+			circles.splice(i, 1);
+			found = true;
+		}
+	}
+
+	for (var i = 0; i < squares.length; i++){
+		d = Math.sqrt((squares[i].x - x) * (squares[i].x - x) + (squares[i].y - y) * (squares[i].y - y));
+		if(d <= 30){
+			squares.splice(i, 1);
+			found = true;
+		}
+	}
+
+	for (var i = 0; i < stars.length; i++){
+		d = Math.sqrt((stars[i].x - x) * (stars[i].x - x) + (stars[i].y - y) * (stars[i].y - y));
+		if(d <= 30){
+			stars.splice(i, 1);
+			found = true;
+		}
+	}
+
+	for (var i = 0; i < triangles.length; i++){
+		d = Math.sqrt((triangles[i].x - x) * (triangles[i].x - x) + (triangles[i].y - y) * (triangles[i].y - y));
+		if(d <= 30){
+			triangles.splice(i, 1);
+			found = true;
+		}
+	}
+
+
+	fillBackgroundColor();
+	if (!found){
+		var colors = [/*'Aquamarine', 'HotPink', 'LemonChiffon', 'PaleTurquoise', 'Khaki'*/ 'white'];
+		var color = colors[Math.floor(Math.random() * colors.length)];
+		var shapes = ['square', 'circle', 'cloud', 'star', 'triangles'];
+		//var colors = ['white', 'yellow', 'pink', 'green'];
+	for (var i = 0; i < 1; i++){
+		//var color = colors[Math.floor(Math.random() * colors.length)];
+		var shape = shapes[Math.floor(Math.random() * shapes.length)];
+		var colors = ['Green', 'Red', 'DarkGreen', 'Gray', 'DarkKhaki'];
+		var color = colors[Math.floor(Math.random() * colors.length)];
+		makeTitle();
+		if (shape == 'circle'){
+			//drawCircle(canvas, context, color);
+			circles.push(new Circle(x, y, color));
+		}
+		else if (shape == 'square'){
+			//drawSquare(canvas, context, color);
+			squares.push(new Square(x, y, color));
+		}
+		else if (shape == 'cloud'){
+			clouds.push(new Cloud(x, y, color));
+		}
+		else if (shape == 'star'){
+			stars.push(new Star(x, y, color));
+		}
+		else {
+			triangles.push(new Triangle(x, y, color));
+		}	
+	}
+}
+
+	for (var i = 0; i < circles.length; i++){
+		drawCircle(circles[i]);
+	}
+	for (var i = 0; i < squares.length; i++){
+		drawSquare(squares[i]);
+	}
+	for (var i = 0; i < clouds.length; i++){
+		drawCloud(clouds[i]);
+	}
+	for (var i = 0; i < stars.length; i++){
+		drawStar(stars[i]);
+	}
+	for (var i = 0; i < triangles.length; i++){
+		drawTriangle(triangles[i]);
+	}
+	for (var i = 0; i < titles.length; i++){
+		makeTitle(titles[i]);
+	}
+	
+}
+
+function drawText(title) {
+	context.fillStyle = 'white';
+	context.font = 'bold 1em sans-serif';
+	context.textAlign = 'right';
+	context.fillText(title, canvas.width-20, canvas.height-40);
+}
+
+function drawCircle(circle){
+	context.beginPath();
+	context.arc(circle.x, circle.y, 30, 0, degreesToRadians(360), true);
+	context.fillStyle = circle.color;
+	context.fill();
+	if (circle.x + circle.dx > canvas.width || circle.x + circle.dx < 0)
+    circle.dx = -circle.dx;
+  if (circle.y + circle.dy > canvas.height || circle.y + circle.dy < 0)
+    circle.dy = -circle.dy;
+  circle.x += circle.dx;
+  circle.y += circle.dy;
+}
+
+function drawSquare (square){
+	var t = 25;
+	var u = 25;
+	//var x = Math.floor(Math.random() * canvas.width);
+	//var y = Math.floor(Math.random() * canvas.height);
+	context.beginPath();
+	context.fillRect(square.x, square.y, t, u)
+	context.fillStyle = square.color;
+	context.fill ();
+
+	if (square.x + square.dx > canvas.width || square.x + square.dx < 0)
+      square.dx = -square.dx;
+  	if (square.y + square.dy > canvas.height || square.y + square.dy < 0)
+ 	  square.dy = -square.dy;
+	  square.x += square.dx;
+	  square.y += square.dy;
+}
+
+// begin custom shape
+function drawCloud (cloud){
+	  context.translate(cloud.x, cloud.y);
+      context.beginPath();
+      context.moveTo(0, 0);
+      context.bezierCurveTo(50, 100, 130, 150, 230, 150);
+      context.bezierCurveTo(250, 180, 320, 180, 340, 150);
+      context.bezierCurveTo(420, 150, 420, 120, 340, 100);
+      context.lineTo(430, 40, 370, 30, 340, 50);
+      context.bezierCurveTo(320, 5, 250, 20, 250, 50);
+      context.bezierCurveTo(50, 5, 150, 20, 170, 80);
+
+      // complete custom shape
+      context.closePath();
+      context.lineWidth = 5;
+      context.fillStyle = cloud.color;
+      context.fill();
+	  context.translate(-cloud.x, -cloud.y);
+
+    if (cloud.x + cloud.dx > canvas.width || cloud.x + cloud.dx < 0)
+      cloud.dx = -cloud.dx;
+  	if (cloud.y + cloud.dy > canvas.height || cloud.y + cloud.dy < 0)
+ 	  cloud.dy = -cloud.dy;
+	  cloud.x += cloud.dx;
+	  cloud.y += cloud.dy;
+  }
+
+  function drawStar (star){
+	  context.translate(star.x, star.y);
+      context.beginPath();
+      context.moveTo(50, 0);
+      context.lineTo(60, 20);
+      context.lineTo(85, 20);
+      context.lineTo(70, 35);
+      context.lineTo(77, 55);
+      context.lineTo(50, 40);
+      context.lineTo(23, 55);
+      context.lineTo(30, 35);
+      context.lineTo(15, 20);
+      context.lineTo(40, 20);
+
+      // complete custom shape
+      context.closePath();
+      context.lineWidth = 5;
+      context.fillStyle = star.color;
+      context.fill();
+	  context.translate(-star.x, -star.y);
+
+    if (star.x + star.dx > canvas.width || star.x + star.dx < 0)
+      star.dx = -star.dx;
+  	if (star.y + star.dy > canvas.height || star.y + star.dy < 0)
+ 	  star.dy = -star.dy;
+	  star.x += star.dx;
+	  star.y += star.dy;
+  }
+
+  function drawTriangle (triangle){
+	  context.translate(triangle.x, triangle.y);
+      context.beginPath();
+      context.moveTo(150, 0);
+      context.lineTo(225, 150);
+      context.lineTo(75, 150);
+
+      // complete custom shape
+      context.closePath();
+      context.lineWidth = 5;
+      context.fillStyle = triangle.color;
+      context.fill();
+	  context.translate(-triangle.x, -triangle.y);
+
+    if (triangle.x + triangle.dx > canvas.width || triangle.x + triangle.dx < 0)
+      triangle.dx = -triangle.dx;
+  	if (triangle.y + triangle.dy > canvas.height || triangle.y + triangle.dy < 0)
+ 	  triangle.dy = -triangle.dy;
+	  triangle.x += triangle.dx;
+	  triangle.y += triangle.dy;
+  }
+
+function degreesToRadians(degrees){
+	return (degrees * Math.PI)/180;
+}
+
+function fillBackgroundColor(){
+	context.fillStyle = 'black';
+	context.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function resizeCanvas (){
+	canvas.width = window.innerWidth - 20;
+	canvas.height = window.innerHeight - 20;
+	fillBackgroundColor();
+	for (var i = 0; i < circles.length; i++){
+		drawCircle(circles[i]);
+	}
+	for (var i = 0; i < squares.length; i++){
+		drawSquare(squares[i]);
+	}
+	for (var i = 0; i < clouds.length; i++){
+		drawCloud(clouds[i]);
+	}
+	for (var i = 0; i < stars.length; i++){
+		drawStar(stars[i]);
+	}
+	for (var i = 0; i < triangles.length; i++){
+		drawTriangle(triangles[i]);
+	}
+	for (var i = 0; i < titles.length; i++){
+		drawTitle(titles[i]);
+	}
+}
+
+
+window.onload = init;
+</script>
+</head>
+<body>
+<canvas id='canvas' width=500 height=500></canvas>
+</body>
+</html>
